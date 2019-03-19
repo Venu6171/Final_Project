@@ -10,8 +10,8 @@
         <Label Content="Contacts" HorizontalAlignment="Left" Margin="142,37,0,0" VerticalAlignment="Top" Height="40" Width="122" FontSize="24" FontWeight="Bold"/>
         <Label Content="Name " HorizontalAlignment="Left" Margin="0,121,0,0" VerticalAlignment="Top" Height="40" Width="122" FontSize="24" FontWeight="Bold"/>
         <Label Content="IP Address" HorizontalAlignment="Left" Margin="0,217,0,0" VerticalAlignment="Top" Height="40" Width="138" FontSize="24" FontWeight="Bold"/>
-        <TextBox x:Name="TextBoxLabel" HorizontalAlignment="Left" Height="37" Margin="97,125,0,0" TextWrapping="Wrap" Text="Enter Name" VerticalAlignment="Top" Width="307" FontSize="24" TextChanged="TextBox_TextChanged"/>
-        <TextBox x:Name="TextBoxLabel_1" HorizontalAlignment="Left" Height="37" Margin="138,220,0,0" TextWrapping="Wrap" Text="Enter IP Address" VerticalAlignment="Top" Width="266" FontSize="24" TextChanged="TextBox_TextChanged_1"/>
+        <TextBox x:Name="TextBoxLabel" HorizontalAlignment="Left" Height="37" Margin="86,125,0,0" TextWrapping="Wrap" Text="Enter Name" VerticalAlignment="Top" Width="318" FontSize="24" TextChanged="TextBox_TextChanged"/>
+        <TextBox x:Name="TextBoxLabel_1" HorizontalAlignment="Left" Height="37" Margin="131,220,0,0" TextWrapping="Wrap" Text="Enter IP Address" VerticalAlignment="Top" Width="273" FontSize="24" TextChanged="TextBox_TextChanged_1"/>
         <Button x:Name="AddToContactsButton" Content="Add To Contacts" HorizontalAlignment="Left" Margin="108,320,0,0" VerticalAlignment="Top" Width="197" Height="35" FontSize="24" FontWeight="Bold" Click="AddToContactsButton_Click"/>
 
     </Grid>

@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Sender_Reciever;
 
 namespace Final_Project
 {
@@ -36,10 +37,15 @@ namespace Final_Project
 
         private void AddToContactsButton_Click(object sender, RoutedEventArgs e)
         {
-            
-            for (int i = 0; i < 10; i++)
+            Label NewName = new Label();
+            for (int i = 0; i < TextBoxLabel.SelectionLength; i++)
             {
+                NewName.Name = TextBoxLabel.Text;
 
+                NewName.Width = 45;
+                NewName.Height = 15;
+                NewName.FontSize = 24;
+                
             }
         }
     }

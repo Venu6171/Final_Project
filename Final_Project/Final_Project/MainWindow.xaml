@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Sender_Reciever"
         mc:Ignorable="d"
-        Title="WorseApp" Height="482.645" Width="664.336">
+        Title="WorseApp" Height="481.145" Width="659.836">
     <Grid>
-        <Button x:Name="FileButton" Content="+" HorizontalAlignment="Left" Margin="146,408,0,0" VerticalAlignment="Top" Width="35" Height="36" FontSize="24"/>
+        <Button x:Name="FileButton" Content="+" HorizontalAlignment="Left" Margin="146,408,0,0" VerticalAlignment="Top" Width="35" Height="36" FontSize="24" Click="FileButton_Click"/>
         <TextBox x:Name="TextBoxButton" HorizontalAlignment="Left" Height="34" Margin="181,408,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="373" FontSize="18"/>
         <Button x:Name="SendButton" Content="Send" HorizontalAlignment="Left" Margin="554,408,0,0" VerticalAlignment="Top" Width="92" Height="34" FontSize="24"/>
         <TextBox x:Name="TextBox2Button" HorizontalAlignment="Left" Height="405" Margin="146,3,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="500" FontSize="18"/>
-        <ScrollViewer x:Name="ScrollBoxViewerBox" HorizontalAlignment="Left" Height="442" VerticalAlignment="Top" Width="146"/>
+        <ScrollViewer x:Name="ScrollBoxViewerBox" HorizontalAlignment="Left" Height="442" VerticalAlignment="Top" Width="141"/>
         <Button x:Name="AddContactsButton" Content="+" HorizontalAlignment="Left" VerticalAlignment="Top" Width="33" Height="34" FontSize="24" Click="AddContactsButton_Click"/>
     </Grid>
 </Window>
