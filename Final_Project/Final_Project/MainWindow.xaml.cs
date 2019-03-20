@@ -12,47 +12,81 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using SimpleTCP;
-using Final_Project;
-using System.Windows.Forms;
+using Microsoft.Win32;
 
-namespace Sender_Reciever
+namespace WorseApp
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     /// 
-    
+
     public partial class MainWindow : Window
     {
+        private LocalData localAppData;
+        List<Button> contactButtons = new List<Button>();
+        int lastContactIndex = 0;
+        public LocalData LocalAppData
+        {
+            get { return localAppData; }
+        }
         public MainWindow()
-        {     
+        {
             InitializeComponent();
+            localAppData = new LocalData();
         }
 
-        SimpleTcpClient Sender_Reciever;
         private string inputPath;
 
-        private void AddContactsButton_Click(object sender, RoutedEventArgs e)
-        {
-            Window1 window = new Window1();
-            window.Show();
 
-
-
-            window.AddToContactsButton.IsPressed.ToString();
-            
-        }
 
         private void FileButton_Click(object sender, RoutedEventArgs e)
         {
-            using (FolderBrowserDialog openFolderDialog = new FolderBrowserDialog())
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            if (openFileDialog.ShowDialog() == true)
             {
-                if (openFolderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                inputPath = openFileDialog.FileName;
+            }
+
+        }
+
+        private void AddToContactsButton_Click(object sender, RoutedEventArgs e)
+        {
+            ContactWindow contactWindow = new ContactWindow();
+            if (contactWindow.ShowDialog() == false)
+            {
+                for (int i = lastContactIndex; i < localAppData.ContactNames.Count; ++i)
                 {
-                    inputPath = openFolderDialog.SelectedPath;
+                    Button button = new Button();
+
+                    button.Content = localAppData.ContactNames[i];
+                    button.Height = AddToContactsButton.Height;
+                    button.Width = AddToContactsButton.Width;
+                    button.HorizontalAlignment = HorizontalAlignment.Left;
+                    button.VerticalAlignment = VerticalAlignment.Top;
+
+                    contactButtons.Add(button);
                 }
-                TextBoxButton.Text = inputPath;
+
+                for (int i = lastContactIndex; i < contactButtons.Count; ++i)
+                {
+                    double buttonOffset = 15.0;
+                    if (i != 0)
+                    {
+                        contactButtons[i].Margin = new Thickness(contactButtons[i - 1].Margin.Left, buttonOffset , contactButtons[i - 1].Margin.Right, contactButtons[i - 1].Margin.Bottom);
+                    }
+                    else
+                    {
+                        contactButtons[i].Margin = new Thickness(AddToContactsButton.Margin.Left, AddToContactsButton.Margin.Top + AddToContactsButton.Height + buttonOffset, AddToContactsButton.Margin.Right, AddToContactsButton.Margin.Bottom);
+                    }
+                    //button.Name = button.Content + "Button";
+                    contactButtons[i].FontSize = contactWindow.NameTextBox.FontSize;
+
+                    ContactsStackPanel.Children.Add(contactButtons[i]);
+
+                    lastContactIndex++;
+                }
             }
         }
     }

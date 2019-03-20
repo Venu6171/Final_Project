@@ -1,17 +1,22 @@
-﻿<Window x:Class="Sender_Reciever.MainWindow"
+﻿<Window x:Class="WorseApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Sender_Reciever"
+        xmlns:local="clr-namespace:WorseApp"
         mc:Ignorable="d"
-        Title="WorseApp" Height="481.145" Width="659.836">
+        Title="WorseApp" Height="486.055" Width="663.518">
     <Grid>
-        <Button x:Name="FileButton" Content="+" HorizontalAlignment="Left" Margin="146,408,0,0" VerticalAlignment="Top" Width="35" Height="36" FontSize="24" Click="FileButton_Click"/>
-        <TextBox x:Name="TextBoxButton" HorizontalAlignment="Left" Height="34" Margin="181,408,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="373" FontSize="18"/>
-        <Button x:Name="SendButton" Content="Send" HorizontalAlignment="Left" Margin="554,408,0,0" VerticalAlignment="Top" Width="92" Height="34" FontSize="24"/>
-        <TextBox x:Name="TextBox2Button" HorizontalAlignment="Left" Height="405" Margin="146,3,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="500" FontSize="18"/>
-        <ScrollViewer x:Name="ScrollBoxViewerBox" HorizontalAlignment="Left" Height="442" VerticalAlignment="Top" Width="141"/>
-        <Button x:Name="AddContactsButton" Content="+" HorizontalAlignment="Left" VerticalAlignment="Top" Width="33" Height="34" FontSize="24" Click="AddContactsButton_Click"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="41*"/>
+            <RowDefinition Height="49*"/>
+        </Grid.RowDefinitions>
+        <Button x:Name="FileButton" Content="+" HorizontalAlignment="Left" Margin="121,204,0,0" VerticalAlignment="Top" Width="35" Height="34" FontSize="24" Click="FileButton_Click" RenderTransformOrigin="0.519,0.38" Grid.Row="1"/>
+        <TextBox x:Name="TextBoxButton" HorizontalAlignment="Left" Height="34" Margin="156,204,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="398" FontSize="18" Grid.Row="1"/>
+        <Button x:Name="SendButton" Content="Send" HorizontalAlignment="Left" Margin="554,204,0,0" VerticalAlignment="Top" Width="92" Height="34" FontSize="24" Grid.Row="1"/>
+        <Button x:Name="AddToContactsButton" Content="Add Contact" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="34" FontSize="14" Click="AddToContactsButton_Click" Margin="10,10,0,0" RenderTransformOrigin="0.5,0.5"/>
+        <StackPanel x:Name="ContactsStackPanel" HorizontalAlignment="Left" Height="450" VerticalAlignment="Top" Width="141" Grid.RowSpan="2"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="442" VerticalAlignment="Top" Width="121" Grid.RowSpan="2"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="408" Margin="121,0,0,0" Grid.RowSpan="2" VerticalAlignment="Top" Width="525"/>
     </Grid>
 </Window>

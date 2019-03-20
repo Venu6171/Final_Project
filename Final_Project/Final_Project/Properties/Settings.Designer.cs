@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Sender_Reciever.Properties
+namespace WorseApp.Properties
 {
 
 
