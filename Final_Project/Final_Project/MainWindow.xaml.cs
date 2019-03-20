@@ -24,8 +24,13 @@ namespace WorseApp
     public partial class MainWindow : Window
     {
         private LocalData localAppData;
+
         List<Button> contactButtons = new List<Button>();
-        int lastContactIndex = 0;
+        private int lastContactIndex = 0;
+
+        List<ContactData> chats = new List<ContactData>();
+
+
         public LocalData LocalAppData
         {
             get { return localAppData; }
@@ -59,12 +64,17 @@ namespace WorseApp
                 for (int i = lastContactIndex; i < localAppData.ContactNames.Count; ++i)
                 {
                     Button button = new Button();
+                    ContactData contactData = new ContactData();
+                    contactData.RecipientName = localAppData.ContactNames[i];
 
                     button.Content = localAppData.ContactNames[i];
                     button.Height = AddToContactsButton.Height;
                     button.Width = AddToContactsButton.Width;
                     button.HorizontalAlignment = HorizontalAlignment.Left;
                     button.VerticalAlignment = VerticalAlignment.Top;
+
+                    button.Click += new RoutedEventHandler(ContactButtonClick);
+                    chats.Add(contactData);
 
                     contactButtons.Add(button);
                 }
@@ -88,6 +98,20 @@ namespace WorseApp
                     lastContactIndex++;
                 }
             }
+        }
+
+        private void ContactButtonClick(object sender, EventArgs e)
+        {
+            string eventSenderName = ((Button)sender).Content.ToString();
+
+            CurrentContactNameLabel.Content = eventSenderName;
+        }
+
+        private void SendButton_Click(object sender, RoutedEventArgs e)
+        {
+            string messageToSend = MessageInputBox.Text;
+
+            
         }
     }
 }
