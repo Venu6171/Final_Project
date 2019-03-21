@@ -85,8 +85,6 @@ namespace WorseApp
                     contactButtons.Add(button);
                 }
 
-                IPAddressWindow iPAddressWindow = new IPAddressWindow();
-                iPAddressWindow.Show();
 
                 for (int i = lastContactIndex; i < contactButtons.Count; ++i)
                 {
@@ -125,6 +123,7 @@ namespace WorseApp
             ShowMessage();
         }
 
+
         private void ShowMessage()
         {
             textBoxes.Clear();
@@ -144,7 +143,6 @@ namespace WorseApp
 
                 textbox.Text = chats[currentContactIndex].MyMessages[i];
                 //textbox.Margin = new Thickness(412, 326, 9, 9);
-
                 SendButton.Click += new RoutedEventHandler(SendButton_Click);
 
                 textBoxes.Add(textbox);
@@ -198,6 +196,7 @@ namespace WorseApp
 
             MessageInputBox.Text = "";
         }
+
     }
 }
 

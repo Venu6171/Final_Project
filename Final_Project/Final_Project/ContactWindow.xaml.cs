@@ -26,11 +26,18 @@ namespace WorseApp
 
         private void SaveContactButton_Click(object sender, RoutedEventArgs e)
         {
-            
+
             MainWindow mainWindow = Application.Current.MainWindow as MainWindow;
             mainWindow.LocalAppData.ContactNames.Add(NameTextBox.Text);
 
             Close();
+        }
+
+        private void NameTextBox_GotMouseCapture(object sender, MouseEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+                if (textBox.Text == "Enter Name")
+                    textBox.Text = string.Empty;
         }
     }
 }
