@@ -12,12 +12,12 @@
             <RowDefinition Height="49*"/>
         </Grid.RowDefinitions>
         <Button x:Name="FileButton" Content="+" HorizontalAlignment="Left" Margin="121,204,0,0" VerticalAlignment="Top" Width="35" Height="34" FontSize="24" Click="FileButton_Click" RenderTransformOrigin="0.519,0.38" Grid.Row="1"/>
-        <TextBox x:Name="MessageInputBox" HorizontalAlignment="Left" Height="34" Margin="156,204,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="398" FontSize="18" Grid.Row="1"/>
+        <TextBox x:Name="MessageInputBox" HorizontalAlignment="Left" Height="34" Margin="156,204,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="398" FontSize="16" Grid.Row="1" IsEnabled="False"/>
         <Button x:Name="SendButton" Content="Send" HorizontalAlignment="Left" Margin="554,204,0,0" VerticalAlignment="Top" Width="92" Height="34" FontSize="24" Grid.Row="1" Click="SendButton_Click"/>
         <Button x:Name="AddToContactsButton" Content="Add Contact" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="34" FontSize="14" Click="AddToContactsButton_Click" Margin="10,10,0,0" RenderTransformOrigin="0.5,0.5"/>
         <StackPanel x:Name="ContactsStackPanel" HorizontalAlignment="Left" Height="450" VerticalAlignment="Top" Width="141" Grid.RowSpan="2"/>
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="442" VerticalAlignment="Top" Width="121" Grid.RowSpan="2"/>
-        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="369" Margin="121,39,0,0" Grid.RowSpan="2" VerticalAlignment="Top" Width="525"/>
-        <Label x:Name="CurrentContactNameLabel" Content="" HorizontalAlignment="Left" Margin="126,0,0,0" VerticalAlignment="Top" Height="34" Width="520" FontSize="18" FontFamily="Times New Roman"/>
+        <Label x:Name="CurrentContactNameLabel" HorizontalAlignment="Left" Margin="126,0,0,0" VerticalAlignment="Top" Height="34" Width="500" FontSize="18" FontFamily="Times New Roman"/>
+        <StackPanel x:Name="MessageStackPanel" HorizontalAlignment="Left" Height="372" Margin="126,34,0,0" Grid.RowSpan="2" VerticalAlignment="Top" Width="520"/>
     </Grid>
 </Window>

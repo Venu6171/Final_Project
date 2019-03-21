@@ -64,6 +64,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="IPAddressWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -76,6 +80,9 @@
     <Compile Include="ContactData.cs" />
     <Compile Include="ContactWindow.xaml.cs">
       <DependentUpon>ContactWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="IPAddressWindow.xaml.cs">
+      <DependentUpon>IPAddressWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="LocalData.cs" />
     <Compile Include="MainWindow.xaml.cs">
