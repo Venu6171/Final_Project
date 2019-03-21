@@ -18,6 +18,7 @@
         <StackPanel x:Name="ContactsStackPanel" HorizontalAlignment="Left" Height="450" VerticalAlignment="Top" Width="141" Grid.RowSpan="2"/>
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="442" VerticalAlignment="Top" Width="121" Grid.RowSpan="2"/>
         <Label x:Name="CurrentContactNameLabel" HorizontalAlignment="Left" Margin="126,0,0,0" VerticalAlignment="Top" Height="34" Width="500" FontSize="18" FontFamily="Times New Roman"/>
-        <StackPanel x:Name="MessageStackPanel" HorizontalAlignment="Left" Height="372" Margin="126,34,0,0" Grid.RowSpan="2" VerticalAlignment="Top" Width="520"/>
+        <StackPanel x:Name="MessageStackPanel" HorizontalAlignment="Left" Height="372" Margin="381,34,0,0" Grid.RowSpan="2" VerticalAlignment="Top" Width="265"/>
+        <StackPanel x:Name="ReceiveMessageStackPanel" HorizontalAlignment="Left" Height="372" Margin="126,34,0,0" Grid.RowSpan="2" VerticalAlignment="Top" Width="250"/>
     </Grid>
 </Window>

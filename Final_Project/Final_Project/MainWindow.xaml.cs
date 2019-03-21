@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
 using System.Net;
+using System.Net.Sockets;
+using System.ComponentModel;
 
 namespace WorseApp
 {
@@ -24,8 +26,15 @@ namespace WorseApp
 
     public partial class MainWindow : Window
     {
+
+        BackgroundWorker BackgroundWorker = new BackgroundWorker();
+        IPHostEntry ipHostInfo;
+        IPAddress ipAddress;
+        IPEndPoint remoteEP;
+
+        Socket senderSocket;
         private LocalData localAppData;
-        private ContactData contactAppData;
+        
         private bool AutoSize { get; set; }
 
         List<Button> contactButtons = new List<Button>();
@@ -120,9 +129,25 @@ namespace WorseApp
                 }
             }
             MessageStackPanel.Children.Clear();
+            ReceiveMessageStackPanel.Children.Clear();
             ShowMessage();
+            ReceiveMessages();
+
+            ConnectHost();
         }
 
+        public void ConnectHost()
+        {
+            ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+            ipAddress = ipHostInfo.AddressList[0];
+            
+            remoteEP = new IPEndPoint(ipAddress, 10000);
+
+            senderSocket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            senderSocket.Connect(remoteEP);
+
+
+        }
 
         private void ShowMessage()
         {
@@ -142,7 +167,7 @@ namespace WorseApp
                 textbox.VerticalAlignment = VerticalAlignment.Bottom;
 
                 textbox.Text = chats[currentContactIndex].MyMessages[i];
-                //textbox.Margin = new Thickness(412, 326, 9, 9);
+               
                 SendButton.Click += new RoutedEventHandler(SendButton_Click);
 
                 textBoxes.Add(textbox);
@@ -160,11 +185,11 @@ namespace WorseApp
                 {
                     if (textBoxes.Count > 1)
                     {
-                        textBoxes[i].Margin = new Thickness(textBoxes[i].Margin.Left, buttonOffset - (textBoxes.Count - 1) * 38, textBoxes[i].Margin.Right, textBoxes[i].Margin.Bottom);
+                        textBoxes[i].Margin = new Thickness(textBoxes[i].Margin.Left, buttonOffset - (textBoxes.Count - 1) * 38, 10, textBoxes[i].Margin.Bottom);
                     }
                     else
                     {
-                        textBoxes[i].Margin = new Thickness(textBoxes[i].Margin.Left, textBoxes[i].Margin.Top + buttonOffset, textBoxes[i].Margin.Right, textBoxes[i].Margin.Bottom);
+                        textBoxes[i].Margin = new Thickness(textBoxes[i].Margin.Left, textBoxes[i].Margin.Top + buttonOffset, 10, textBoxes[i].Margin.Bottom);
                     }
                 }
             }
@@ -181,6 +206,65 @@ namespace WorseApp
 
         }
 
+        public void ReceiveMessages()
+        {
+            textBoxes.Clear();
+            if (chats[currentContactIndex].OtherMessages.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0; i < chats[currentContactIndex].OtherMessages.Count; ++i)
+            {
+                TextBox textBox = new TextBox();
+                ContactData contactData = new ContactData();
+                textBox.FontSize = 18;
+                textBox.Height = 28;
+                textBox.FontWeight = MessageInputBox.FontWeight;
+                textBox.HorizontalAlignment = HorizontalAlignment.Left;
+                textBox.VerticalAlignment = VerticalAlignment.Bottom;
+
+                textBox.Text = chats[currentContactIndex].OtherMessages[i];
+                SendButton.Click += new RoutedEventHandler(SendButton_Click);
+
+                textBoxes.Add(textBox);
+
+            }
+
+            for (int i = 0; i < textBoxes.Count; ++i)
+            {
+                double buttonOffset = 300.0;
+                if (i != 0)
+                {
+                    textBoxes[i].Margin = new Thickness(textBoxes[i - 1].Margin.Left, 10, textBoxes[i - 1].Margin.Right, textBoxes[i - 1].Margin.Bottom);
+                }
+                else
+                {
+                    if (textBoxes.Count > 1)
+                    {
+                        textBoxes[i].Margin = new Thickness(10, buttonOffset - (textBoxes.Count - 1) * 38, textBoxes[i].Margin.Right, textBoxes[i].Margin.Bottom);
+
+                    }
+                    else
+                    {
+                        textBoxes[i].Margin = new Thickness(10, textBoxes[i].Margin.Top + buttonOffset, textBoxes[i].Margin.Right, textBoxes[i].Margin.Bottom);
+                    }
+                }
+
+            }
+            ReceiveMessageStackPanel.Children.Clear();
+            for (int j = 0; j < textBoxes.Count; j++)
+            {
+
+                ReceiveMessageStackPanel.Children.Add(textBoxes[j]);
+                textBoxes[j].IsEnabled = false;
+
+
+            }
+
+
+        }
+
+
 
         private void SendButton_Click(object sender, RoutedEventArgs e)
         {
@@ -192,9 +276,55 @@ namespace WorseApp
 
             chats[currentContactIndex].MyMessages.Add(messageToSend);
 
+            MessageStackPanel.Children.Clear();
+
+            ReceiveMessageStackPanel.Children.Clear();
+
             ShowMessage();
+            ReceiveMessages();
 
             MessageInputBox.Text = "";
+
+            StartClient(currentContactIndex);
+        }
+
+        private void StartClient(int CurrentIndex)
+        {
+            if (!senderSocket.Connected)
+            {
+                ConnectHost();
+            }
+            byte[] bytes = new byte[1024];
+            try
+            {
+               
+                int CurrentMessageIndex = chats[CurrentIndex].MyMessages.Count - 1;
+                string SendMessage = chats[CurrentIndex].MyMessages[CurrentMessageIndex];
+               
+                byte[] msg = Encoding.ASCII.GetBytes(SendMessage);
+
+                int bytesSent = senderSocket.Send(msg);
+               
+                int bytesRec = senderSocket.Receive(bytes);
+                int ReceiveMessageIndex = chats[currentContactIndex].MyMessages.Count;
+                string ReceiveMessage = Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                chats[currentContactIndex].OtherMessages.Add(ReceiveMessage);
+              
+            }
+            catch (ArgumentNullException ane)
+            {
+                Console.WriteLine("ArgumentNullException : {0}", ane.ToString());
+            }
+            catch (SocketException se)
+            {
+                Console.WriteLine("SocketException : {0}", se.ToString());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Unexpected exception : {0}", e.ToString());
+            }
+
+            ReceiveMessages();
         }
 
     }
