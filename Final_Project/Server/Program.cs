@@ -15,15 +15,13 @@ namespace Server
         public static Dictionary<string, string> clientsInfo = new Dictionary<string, string>();
         public static void Main(String[] args)
         {
-            //StartListening();
-
-            //StartListening();
+            
 
             TcpListener listener = new TcpListener(IPAddress.Any, 8000);
             clients = new List<TcpClient>();
             listener.Start();
          
-            while (true) // Add your exit flag here
+            while (true) 
             {
                 TcpClient client;
                 client = listener.AcceptTcpClient();

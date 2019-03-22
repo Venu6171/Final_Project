@@ -108,7 +108,7 @@ namespace WorseApp
                     {
                         contactButtons[i].Margin = new Thickness(AddToContactsButton.Margin.Left, AddToContactsButton.Margin.Top + AddToContactsButton.Height + buttonOffset, AddToContactsButton.Margin.Right, AddToContactsButton.Margin.Bottom);
                     }
-                    //button.Name = button.Content + "Button";
+                   
                     contactButtons[i].FontSize = contactWindow.NameTextBox.FontSize;
 
                     ContactsStackPanel.Children.Add(contactButtons[i]);
@@ -135,13 +135,23 @@ namespace WorseApp
             ShowMessage();
             ReceiveMessages();
 
-           // ConnectHost();
+            //ConnectHost();
         }
 
         public void ConnectHost()
         {
             client = new TcpClient(serverIPAddress, 8000);
 
+            byte[] bytes = new byte[1024];
+            string message;
+
+            message = ContactHistory.contactData[currentContactIndex].RecipientName;
+            bytes = System.Text.Encoding.ASCII.GetBytes(message);
+            NetworkStream stream = client.GetStream();
+            stream.Write(bytes, 0, bytes.Length);
+            string ClientID;
+            Int32 Bytes = stream.Read(bytes, 0, bytes.Length);
+            ClientID = System.Text.Encoding.ASCII.GetString(bytes, 0, Bytes);
         }
 
         public void ShowMessage()
@@ -316,7 +326,8 @@ namespace WorseApp
 
         private void StartClient(int CurrentIndex)
         {
-            
+            try
+            {
                 byte[] bytes = new byte[1024];
                 string message;
                 int currentMessage = ContactHistory.contactData[CurrentIndex].MyMessages.Count - 1;
@@ -340,11 +351,12 @@ namespace WorseApp
                 ContactHistory.contactData[CurrentIndex].OtherMessages.Add(responseData);
 
                 ReceiveMessages();
-            
-            //catch(Exception ex)
-            //{
-            //    System.Windows.MessageBox.Show(ex.Message, "Info");
-            //}
+            }
+
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message, "Info");
+            }
         }
 
     }
