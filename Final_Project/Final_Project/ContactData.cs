@@ -3,9 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace WorseApp
 {
+    [XmlRoot("ContactsData")]
+    public class ContactsData
+    {
+        [XmlArray("ContactsDatas")]
+        [XmlArrayItem("ContactData")]
+        public List<ContactData> contactData;
+
+        public ContactsData()
+        {
+            contactData = new List<ContactData>();
+        }
+    }
+
     public class ContactData
     {
         private static int id;

@@ -16,6 +16,7 @@ using Microsoft.Win32;
 using System.Net;
 using System.Net.Sockets;
 using System.ComponentModel;
+using System.IO;
 
 namespace WorseApp
 {
@@ -28,45 +29,47 @@ namespace WorseApp
     {
 
         BackgroundWorker BackgroundWorker = new BackgroundWorker();
-        IPHostEntry ipHostInfo;
-        IPAddress ipAddress;
-        IPEndPoint remoteEP;
-
-        Socket senderSocket;
+        public TcpClient client;
         private LocalData localAppData;
         
         private bool AutoSize { get; set; }
 
-        List<Button> contactButtons = new List<Button>();
+        public List<Button> contactButtons = new List<Button>();
         private int lastContactIndex = 0;
 
-        List<ContactData> chats = new List<ContactData>();
+        public ContactsData ContactHistory = new ContactsData();
 
         List<TextBox> textBoxes = new List<TextBox>();
         private int MessageSent = 0;
 
         private int currentContactIndex;
 
+        IPAddressWindow IPInput;
+
+        public string serverIPAddress;
+        public string myName;
+
         public LocalData LocalAppData
         {
             get { return localAppData; }
         }
+
         public MainWindow()
         {
             InitializeComponent();
             localAppData = new LocalData();
+
+            IPInput = new IPAddressWindow();
+
+            Show();
+            IPInput.Show();
         }
-
-        private string inputPath;
-
+        
         private void FileButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
+            SaveORLoad saveORLoad = new SaveORLoad();
+            saveORLoad.Show();
 
-            if (openFileDialog.ShowDialog() == true)
-            {
-                inputPath = openFileDialog.FileName;
-            }
 
         }
 
@@ -89,11 +92,10 @@ namespace WorseApp
                     button.VerticalAlignment = VerticalAlignment.Top;
 
                     button.Click += new RoutedEventHandler(ContactButtonClick);
-                    chats.Add(contactData);
+                    ContactHistory.contactData.Add(contactData);
 
                     contactButtons.Add(button);
                 }
-
 
                 for (int i = lastContactIndex; i < contactButtons.Count; ++i)
                 {
@@ -121,9 +123,9 @@ namespace WorseApp
             string eventSenderName = ((Button)sender).Content.ToString();
             MessageInputBox.IsEnabled = true;
             CurrentContactNameLabel.Content = eventSenderName;
-            for (int i = 0; i < chats.Count; ++i)
+            for (int i = 0; i < ContactHistory.contactData.Count; ++i)
             {
-                if (chats[i].RecipientName == eventSenderName)
+                if (ContactHistory.contactData[i].RecipientName == eventSenderName)
                 {
                     currentContactIndex = i;
                 }
@@ -133,30 +135,23 @@ namespace WorseApp
             ShowMessage();
             ReceiveMessages();
 
-            ConnectHost();
+           // ConnectHost();
         }
 
         public void ConnectHost()
         {
-            ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            ipAddress = ipHostInfo.AddressList[0];
-            
-            remoteEP = new IPEndPoint(ipAddress, 10000);
-
-            senderSocket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            senderSocket.Connect(remoteEP);
-
+            client = new TcpClient(serverIPAddress, 8000);
 
         }
 
-        private void ShowMessage()
+        public void ShowMessage()
         {
             textBoxes.Clear();
-            if(chats[currentContactIndex].MyMessages.Count == 0)
+            if(ContactHistory.contactData[currentContactIndex].MyMessages.Count == 0)
             {
                 return;
             }
-            for (int i = 0; i < chats[currentContactIndex].MyMessages.Count; ++i)
+            for (int i = 0; i < ContactHistory.contactData[currentContactIndex].MyMessages.Count; ++i)
             {
                 TextBox textbox = new TextBox();
                 ContactData contactData = new ContactData();
@@ -166,7 +161,7 @@ namespace WorseApp
                 textbox.HorizontalAlignment = HorizontalAlignment.Right;
                 textbox.VerticalAlignment = VerticalAlignment.Bottom;
 
-                textbox.Text = chats[currentContactIndex].MyMessages[i];
+                textbox.Text = ContactHistory.contactData[currentContactIndex].MyMessages[i];
                
                 SendButton.Click += new RoutedEventHandler(SendButton_Click);
 
@@ -209,11 +204,11 @@ namespace WorseApp
         public void ReceiveMessages()
         {
             textBoxes.Clear();
-            if (chats[currentContactIndex].OtherMessages.Count == 0)
+            if (ContactHistory.contactData[currentContactIndex].OtherMessages.Count == 0)
             {
                 return;
             }
-            for (int i = 0; i < chats[currentContactIndex].OtherMessages.Count; ++i)
+            for (int i = 0; i < ContactHistory.contactData[currentContactIndex].OtherMessages.Count; ++i)
             {
                 TextBox textBox = new TextBox();
                 ContactData contactData = new ContactData();
@@ -223,7 +218,7 @@ namespace WorseApp
                 textBox.HorizontalAlignment = HorizontalAlignment.Left;
                 textBox.VerticalAlignment = VerticalAlignment.Bottom;
 
-                textBox.Text = chats[currentContactIndex].OtherMessages[i];
+                textBox.Text = ContactHistory.contactData[currentContactIndex].OtherMessages[i];
                 SendButton.Click += new RoutedEventHandler(SendButton_Click);
 
                 textBoxes.Add(textBox);
@@ -254,17 +249,48 @@ namespace WorseApp
             ReceiveMessageStackPanel.Children.Clear();
             for (int j = 0; j < textBoxes.Count; j++)
             {
-
                 ReceiveMessageStackPanel.Children.Add(textBoxes[j]);
                 textBoxes[j].IsEnabled = false;
-
-
             }
-
-
         }
 
+        public void GenerateContactButtons()
+        {
+            for (int i = 0; i < ContactHistory.contactData.Count; ++i)
+            {
+                Button button = new Button();
+                ContactData contactData = new ContactData();
+                contactData.RecipientName = ContactHistory.contactData[i].RecipientName;
 
+                button.Content = contactData.RecipientName;
+                button.Height = AddToContactsButton.Height;
+                button.Width = AddToContactsButton.Width;
+                button.HorizontalAlignment = HorizontalAlignment.Left;
+                button.VerticalAlignment = VerticalAlignment.Top;
+
+                button.Click += new RoutedEventHandler(ContactButtonClick);
+                //ContactHistory.contactData.Add(contactData);
+
+                contactButtons.Add(button);
+            }
+
+            for (int i = 0; i < contactButtons.Count; ++i)
+            {
+                double buttonOffset = 15.0;
+                if (i != 0)
+                {
+                    contactButtons[i].Margin = new Thickness(contactButtons[i - 1].Margin.Left, buttonOffset, contactButtons[i - 1].Margin.Right, contactButtons[i - 1].Margin.Bottom);
+                }
+                else
+                {
+                    contactButtons[i].Margin = new Thickness(AddToContactsButton.Margin.Left, AddToContactsButton.Margin.Top + AddToContactsButton.Height + buttonOffset, AddToContactsButton.Margin.Right, AddToContactsButton.Margin.Bottom);
+                }
+                //button.Name = button.Content + "Button";
+                contactButtons[i].FontSize = 14;
+
+                ContactsStackPanel.Children.Add(contactButtons[i]);
+            }
+        }
 
         private void SendButton_Click(object sender, RoutedEventArgs e)
         {
@@ -274,7 +300,7 @@ namespace WorseApp
                 return;
             }
 
-            chats[currentContactIndex].MyMessages.Add(messageToSend);
+            ContactHistory.contactData[currentContactIndex].MyMessages.Add(messageToSend);
 
             MessageStackPanel.Children.Clear();
 
@@ -290,41 +316,35 @@ namespace WorseApp
 
         private void StartClient(int CurrentIndex)
         {
-            if (!senderSocket.Connected)
-            {
-                ConnectHost();
-            }
-            byte[] bytes = new byte[1024];
-            try
-            {
-               
-                int CurrentMessageIndex = chats[CurrentIndex].MyMessages.Count - 1;
-                string SendMessage = chats[CurrentIndex].MyMessages[CurrentMessageIndex];
-               
-                byte[] msg = Encoding.ASCII.GetBytes(SendMessage);
+            
+                byte[] bytes = new byte[1024];
+                string message;
+                int currentMessage = ContactHistory.contactData[CurrentIndex].MyMessages.Count - 1;
+                message = ContactHistory.contactData[CurrentIndex].MyMessages[currentMessage];
 
-                int bytesSent = senderSocket.Send(msg);
-               
-                int bytesRec = senderSocket.Receive(bytes);
-                int ReceiveMessageIndex = chats[currentContactIndex].MyMessages.Count;
-                string ReceiveMessage = Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                chats[currentContactIndex].OtherMessages.Add(ReceiveMessage);
-              
-            }
-            catch (ArgumentNullException ane)
-            {
-                Console.WriteLine("ArgumentNullException : {0}", ane.ToString());
-            }
-            catch (SocketException se)
-            {
-                Console.WriteLine("SocketException : {0}", se.ToString());
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Unexpected exception : {0}", e.ToString());
-            }
+                bytes = System.Text.Encoding.ASCII.GetBytes(message);
 
-            ReceiveMessages();
+                NetworkStream stream = client.GetStream();
+
+
+                stream.Write(bytes, 0, bytes.Length);
+
+                Console.WriteLine("Sent: {0}", message);
+
+                bytes = new byte[1024];
+
+                string responseData = string.Empty;
+
+                Int32 Bytes = stream.Read(bytes, 0, bytes.Length);
+                responseData = System.Text.Encoding.ASCII.GetString(bytes, 0, Bytes);
+                ContactHistory.contactData[CurrentIndex].OtherMessages.Add(responseData);
+
+                ReceiveMessages();
+            
+            //catch(Exception ex)
+            //{
+            //    System.Windows.MessageBox.Show(ex.Message, "Info");
+            //}
         }
 
     }

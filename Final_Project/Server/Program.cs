@@ -5,93 +5,79 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
-
+using System.Threading;
 
 namespace Server
 {
     public class SynchronousSocketListener
     {
-
-        public static string data_client_A = null;
-        public static string data_client_B = null;
-
-        public static void StartListening()
+        public static List<TcpClient> clients;
+        public static Dictionary<string, string> clientsInfo = new Dictionary<string, string>();
+        public static void Main(String[] args)
         {
-            byte[] bytes = new Byte[1024];
-            byte[] bytes_2 = new Byte[1024];
-            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress ipAddress = ipHostInfo.AddressList[0];
+            //StartListening();
 
-            IPEndPoint localEndPoint_Client_A = new IPEndPoint(ipAddress, 10000);
+            //StartListening();
 
-            IPEndPoint localEndPoint_Client_B = new IPEndPoint(ipAddress, 10001);
-
-
-            Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            Socket listener2 = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
-
-            try
+            TcpListener listener = new TcpListener(IPAddress.Any, 8000);
+            clients = new List<TcpClient>();
+            listener.Start();
+         
+            while (true) // Add your exit flag here
             {
-                listener.Bind(localEndPoint_Client_A);
-                listener.Listen(10);
-                listener2.Bind(localEndPoint_Client_B);
-                listener2.Listen(10);
-
-
-                while (true)
-                {
-                    Console.WriteLine("Waiting for a connection...");
-
-
-
-                    Socket handler_Client_A = listener.Accept();
-                    Socket handler_Client_B = listener2.Accept();
-                    data_client_A = null;
-                    data_client_B = null;
-                    Console.WriteLine("Both Clients Connected");
-
-
-                    int bytesRec = handler_Client_A.Receive(bytes);
-                    data_client_A += Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                    int bytesRec_2 = handler_Client_B.Receive(bytes_2);
-                    data_client_B += Encoding.ASCII.GetString(bytes_2, 0, bytesRec_2);
-
-
-
-                    Console.WriteLine("Text received: {0}", data_client_A);
-                    Console.WriteLine("Text received: {0}", data_client_B);
-
-                    byte[] msg = Encoding.ASCII.GetBytes(data_client_A);
-                    handler_Client_B.Send(msg);
-
-                    byte[] msg_2 = Encoding.ASCII.GetBytes(data_client_B);
-                    handler_Client_A.Send(msg_2);
-
-
-
-
-                    handler_Client_A.Shutdown(SocketShutdown.Both);
-                    handler_Client_A.Close();
-                    handler_Client_B.Shutdown(SocketShutdown.Both);
-                    handler_Client_B.Close();
-                }
-
+                TcpClient client;
+                client = listener.AcceptTcpClient();
+                clients.Add(client);
+                Console.WriteLine("Connected.");
+                ThreadPool.QueueUserWorkItem(ThreadProc, client);
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-
 
         }
 
-        public static int Main(String[] args)
+        private static void ThreadProc(object obj)
         {
-            StartListening();
+            TcpClient client = obj as TcpClient;
+
+            string data = null;
+            byte[] bytes = new byte[1024];
+            data = null;
+            NetworkStream stream = client.GetStream();
+
+            int counter = 0;
+            int i;
+            try
+            {
 
 
-            return 0;
+                while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+                {
+                    data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
+                    Console.WriteLine("Received: {0}", data);
+
+                    clientsInfo.Add(data, client.Client.RemoteEndPoint.ToString());
+
+                    byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
+
+                    int ClientID = clients.Count;
+                    byte[] intBytes = BitConverter.GetBytes(ClientID);
+                    //Array.Reverse(intBytes);
+                    //byte[] result = intBytes;
+
+                    //byte[] ClientID = System.Text.Encoding.ASCII.GetBytes();
+                    if (counter != 0)
+                    {
+                        stream.Write(msg, 0, msg.Length);
+                    }
+                    Console.WriteLine("Sent: {0}", data);
+
+                    counter++;
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
         }
     }
 }
